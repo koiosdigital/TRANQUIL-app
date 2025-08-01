@@ -28,9 +28,3 @@ auto-imports.d.ts
 components.d.ts
 tsconfig.app.tsbuildinfo
 tsconfig.node.tsbuildinfo
-
-# Environment variables
-.env
-
-#Generated proto files
-*_pb.ts

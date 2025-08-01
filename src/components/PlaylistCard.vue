@@ -3,16 +3,12 @@
     class="bg-zinc-900 p-4 rounded-2xl drop-shadow-2xl flex flex-col justify-between aspect-square items-center"
   >
     <div class="flex flex-col items-center">
-      <div class="text-base font-semibold text-slate-100 text-center">{{ pattern.name }}</div>
-      <div class="text-xs text-slate-500 text-center">by {{ pattern.creator }}</div>
+      <div class="text-base font-semibold text-slate-100 text-center">{{ playlist.name }}</div>
     </div>
-    <PatternImage v-if="token" :pattern="pattern" class="w-[60%]!" />
-    <div class="flex justify-between items-center w-full">
+    <PatternImage v-if="token" :pattern="featuredPattern" class="w-[60%]!" />
+    <div class="text-xs text-slate-500 text-center">{{ playlist.description }}</div>
+    <div class="flex justify-start items-center w-full">
       <span class="text-xs text-slate-500">{{ formattedDate }}</span>
-      <span class="flex items-center gap-1 text-xs text-slate-500">
-        <HandThumbUpIcon class="h-4 w-4 text-slate-500" />
-        {{ Math.round(pattern.popularity) }}
-      </span>
     </div>
   </div>
 </template>
@@ -20,18 +16,26 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useCloudAPIStore } from '@/stores/cloud-api'
-import { HandThumbUpIcon } from '@heroicons/vue/24/outline'
 import PatternImage from './PatternImage.vue'
+import { Playlist } from '@/cloud-api-types'
 
-import { Pattern } from '@/cloud-api-types'
-
-const props = defineProps<{ pattern: Pattern }>()
+const props = defineProps<{ playlist: Playlist }>()
 
 const cloudAPI = useCloudAPIStore()
 const token = ref('')
 
 onMounted(async () => {
   token.value = await cloudAPI.getToken()
+})
+
+const featuredPattern = computed(() => {
+  return {
+    uuid: props.playlist.featured_pattern,
+    name: '',
+    creator: '',
+    date: props.playlist.date,
+    popularity: 0,
+  }
 })
 
 function timeAgo(dateString: string): string {
@@ -52,5 +56,5 @@ function timeAgo(dateString: string): string {
   return `${years} year${years === 1 ? '' : 's'} ago`
 }
 
-const formattedDate = computed(() => timeAgo(props.pattern.date))
+const formattedDate = computed(() => timeAgo(props.playlist.date))
 </script>

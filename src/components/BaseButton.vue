@@ -1,6 +1,6 @@
 <template>
   <button
-    :type="type as 'button' | 'submit' | 'reset'"
+    :type="type"
     :class="[
       'w-full flex items-center justify-center gap-2 font-semibold py-2 rounded-md transition-colors disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-zinc-900',
       variant === 'secondary'
@@ -14,9 +14,11 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  type: { type: String, default: 'button' },
-  disabled: { type: Boolean, default: false },
-  variant: { type: String, default: 'primary' },
-})
+type ButtonType = 'button' | 'submit' | 'reset'
+
+defineProps<{
+  type?: ButtonType
+  variant?: 'primary' | 'secondary'
+  disabled?: boolean
+}>()
 </script>

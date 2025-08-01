@@ -1,26 +1,16 @@
 import { tableBaseURL } from "@/main";
 import { defineStore } from "pinia";
-import { GetPatternsResponse } from "./cloud-api-types";
+import { GetPatternsResponse, GetPlaylistsResponse, Pattern, Playlist } from "../cloud-api-types";
+import { ref } from "vue";
 
-export interface Pattern {
-  uuid: string;
-  name: string;
-  date: string;
-  popularity: number;
-  creator: string;
-}
-
-export interface Playlist {
-  uuid: string;
-  name: string;
-  description: string;
-  patterns: string[];
-  featured_pattern: string;
-  date: string;
-}
+const apiBaseURL = "https://tranquil.api.koiosdigital.net";
 
 export const useCloudAPIStore = defineStore('cloud-api', () => {
-  const apiBaseURL = "https://tranquil.api.koiosdigital.net";
+  const playlists = ref<Playlist[]>([]);
+  const patterns = ref<Pattern[]>([]);
+
+  const lastPlaylistsPage = ref(0);
+  const lastPatternsPage = ref(0);
 
   const getToken = async () => {
     const token = localStorage.getItem('tranquil-token');
@@ -36,7 +26,7 @@ export const useCloudAPIStore = defineStore('cloud-api', () => {
 
     const data = await response.json();
     localStorage.setItem('tranquil-token', data.token);
-    return data.token;
+    return data.token as string;
   }
 
   const doLogin = async (email: string, password: string) => {
@@ -55,9 +45,9 @@ export const useCloudAPIStore = defineStore('cloud-api', () => {
     return data.token;
   }
 
-  const getPatterns = async (page: number = 1): Promise<GetPatternsResponse> => {
+  const getMorePatterns = async () => {
     const token = await getToken();
-    const response = await fetch(`${apiBaseURL}/patterns?page=${page}`, {
+    const response = await fetch(`${apiBaseURL}/patterns?page=${lastPatternsPage.value + 1}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -67,13 +57,35 @@ export const useCloudAPIStore = defineStore('cloud-api', () => {
       throw new Error('Failed to fetch patterns');
     }
 
-    return response.json();
+    const data = await response.json() as GetPatternsResponse;
+    patterns.value.push(...data.results);
+    lastPatternsPage.value++;
+  }
+
+  const getMorePlaylists = async () => {
+    const token = await getToken();
+    const response = await fetch(`${apiBaseURL}/playlists?page=${lastPlaylistsPage.value + 1}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch playlists');
+    }
+
+    const data = await response.json() as GetPlaylistsResponse;
+    playlists.value.push(...data.results);
+    lastPlaylistsPage.value++;
   }
 
   return {
     apiBaseURL,
     getToken,
     doLogin,
-    getPatterns
+    getMorePatterns,
+    getMorePlaylists,
+    patterns,
+    playlists,
   }
 });

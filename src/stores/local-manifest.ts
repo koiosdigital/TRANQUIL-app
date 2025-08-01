@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
-import { Pattern, Playlist } from "./cloud-api";
 import { tableBaseURL } from "@/main";
 import { ref } from "vue";
+import { Pattern, Playlist } from "@/cloud-api-types";
 
 export const localFileManager = defineStore('localFileManager', () => {
   const localPatterns = ref([] as Pattern[]);
@@ -44,6 +44,14 @@ export const localFileManager = defineStore('localFileManager', () => {
       totalPlaylists: data.total,
       totalPages: Math.floor(data.total / 20) // Assuming 20 playlists per page
     }
+  }
+
+  const getPatternByUUID = (uuid: string) => {
+    return localPatterns.value.find(pattern => pattern.uuid === uuid) || null;
+  }
+
+  const getPlaylistByUUID = (uuid: string) => {
+    return localPlaylists.value.find(playlist => playlist.uuid === uuid) || null;
   }
 
   const getPatterns = async (page: number = 0) => {
@@ -94,10 +102,18 @@ export const localFileManager = defineStore('localFileManager', () => {
     loadLocalPlaylists();
   }
 
+  const reload = async () => {
+    await loadLocalPatterns();
+    await loadLocalPlaylists();
+  }
+
   return {
     downloadPattern,
     deletePattern,
     localPatterns,
     localPlaylists,
+    getPatternByUUID,
+    getPlaylistByUUID,
+    reload
   };
 });

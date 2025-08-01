@@ -7,7 +7,7 @@
       v-if="token"
       :src="`${cloudAPI.apiBaseURL}/patterns/${pattern.uuid}/thumb.png?auth_token=${token}`"
       alt="Pattern thumbnail"
-      class="w-50 aspect-square rounded-full object-cover border-2 border-zinc-700"
+      class="w-60 aspect-square rounded-full object-cover border-2 border-zinc-700 bg-zinc-950"
       loading="lazy"
     />
     <div class="flex justify-between items-center w-full">
@@ -18,30 +18,59 @@
       </span>
     </div>
     <div class="flex flex-row gap-4 mt-6 w-full justify-center">
-      <IconButton color="primary" title="Play" @click="$emit('play')">
+      <IconButton color="primary" title="Play" @click="playPattern">
         <PlayIcon class="h-6 w-6" />
       </IconButton>
-      <IconButton color="secondary" title="Delete" @click="$emit('delete')">
+      <IconButton
+        color="secondary"
+        title="Delete"
+        @click="deletePattern"
+        v-if="player.state.pattern_uuid !== pattern.uuid"
+      >
         <TrashIcon class="h-6 w-6" />
       </IconButton>
-      <IconButton color="primary" title="Cancel" @click="$emit('cancel')">
+      <IconButton color="primary" title="Cancel" @click="addToPlaylist">
         <PlusIcon class="h-6 w-6" />
       </IconButton>
     </div>
+
+    <Modal v-model="showAddToPlaylist" title="Add to Playlist" dismissable>
+      <PlaylistAddPatternModal :pattern="pattern" @close="showAddToPlaylist = false" />
+    </Modal>
+
+    <Modal v-model="showOverplayConfirmation" title="Overplay Confirmation" dismissable>
+      <PatternOverplayConfirmationModal
+        :pattern="pattern"
+        @close="showOverplayConfirmation = false"
+      />
+    </Modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useCloudAPIStore, type Pattern } from '@/stores/cloud-api'
+import { useCloudAPIStore } from '@/stores/cloud-api'
 import { HandThumbUpIcon, PlayIcon, PlusIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import IconButton from '@/components/IconButton.vue'
+import Modal from '@/components/Modal.vue'
+import PlaylistAddPatternModal from '@/modals/PlaylistAddPatternModal.vue'
+import { Pattern } from '@/cloud-api-types'
+import { PlayerStatus, usePlayerStore } from '@/stores/player'
+import { useLoaderStore } from '@/stores/loader'
+import { localFileManager } from '@/stores/local-manifest'
+import PatternOverplayConfirmationModal from './PatternOverplayConfirmationModal.vue'
 
 const props = defineProps<{ pattern: Pattern }>()
-const emit = defineEmits(['play', 'delete', 'cancel'])
+const emit = defineEmits(['close'])
 
 const cloudAPI = useCloudAPIStore()
 const token = ref('')
+const showAddToPlaylist = ref(false)
+const showOverplayConfirmation = ref(false)
+
+const player = usePlayerStore()
+const loader = useLoaderStore()
+const localManifest = localFileManager()
 
 onMounted(async () => {
   token.value = await cloudAPI.getToken()
@@ -66,4 +95,27 @@ function timeAgo(dateString: string): string {
 }
 
 const formattedDate = computed(() => timeAgo(props.pattern.date))
+
+const playPattern = async () => {
+  if (
+    player.state.playback_state === PlayerStatus.Playing ||
+    player.state.playback_state === PlayerStatus.Paused
+  ) {
+    showOverplayConfirmation.value = true
+    return
+  }
+  await player.play(props.pattern.uuid)
+  emit('close')
+}
+
+const deletePattern = async () => {
+  loader.showLoader('delete', 'Deleting pattern...')
+  await localManifest.deletePattern(props.pattern.uuid)
+  loader.hideLoader('delete')
+  emit('close')
+}
+
+const addToPlaylist = () => {
+  showAddToPlaylist.value = true
+}
 </script>

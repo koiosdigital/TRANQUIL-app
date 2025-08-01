@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="message"
     :class="[
       'mb-4 flex items-center gap-2 px-4 py-3 rounded relative text-center font-medium',
       alertType.bg,
@@ -10,24 +9,18 @@
     role="alert"
   >
     <span v-html="alertType.icon" class="w-5 h-5 shrink-0"></span>
-    <span class="flex-1">{{ message }}</span>
+    <span class="flex-1"><slot /></span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, computed } from 'vue'
 
-const props = defineProps({
-  type: {
-    type: String,
-    default: 'info',
-    validator: (val: string) => ['error', 'success', 'info', 'warning'].includes(val),
-  },
-  message: {
-    type: String,
-    default: '',
-  },
-})
+type AlertType = 'error' | 'success' | 'info' | 'warning'
+
+const props = defineProps<{
+  type?: AlertType
+}>()
 
 const alertType = computed(() => {
   switch (props.type) {

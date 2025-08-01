@@ -4,13 +4,13 @@
       <PatternImage v-if="pattern" :pattern="pattern" />
     </div>
     <div>
-      Do you want to download <span class="font-semibold">{{ pattern?.name }}</span> to your device?
+      Do you want to delete <span class="font-semibold">{{ pattern?.name }}</span> from your device?
     </div>
     <div class="flex flex-row gap-2 justify-center mt-6">
-      <BaseButton @click="onCancel" :disabled="downloading" type="button" variant="secondary">
+      <BaseButton @click="onCancel" :disabled="deleting" type="button" variant="secondary">
         Cancel
       </BaseButton>
-      <BaseButton @click="onDownload" :disabled="downloading">Download</BaseButton>
+      <BaseButton @click="onDelete" :disabled="deleting">Delete</BaseButton>
     </div>
   </div>
 </template>
@@ -19,25 +19,19 @@
 import { Pattern } from '@/cloud-api-types'
 import BaseButton from '@/components/BaseButton.vue'
 import PatternImage from '@/components/PatternImage.vue'
-import { useLoaderStore } from '@/stores/loader'
 import { localFileManager } from '@/stores/local-manifest'
 import { ref } from 'vue'
 
 const props = defineProps<{ pattern: Pattern }>()
-
-const loader = useLoaderStore()
-const localManifest = localFileManager()
-
-const downloading = ref(false)
-
 const emit = defineEmits(['close'])
 
-async function onDownload() {
-  downloading.value = true
-  loader.showLoader('dl', 'Downloading pattern...')
-  await localManifest.downloadPattern(props.pattern.uuid)
-  loader.hideLoader('dl')
-  downloading.value = false
+const deleting = ref(false)
+const localFS = localFileManager()
+
+async function onDelete() {
+  deleting.value = true
+  await localFS.deletePattern(props.pattern.uuid)
+  deleting.value = false
   emit('close')
 }
 

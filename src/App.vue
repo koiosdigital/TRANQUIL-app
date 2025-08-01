@@ -1,13 +1,13 @@
 <template>
   <div class="bg-zinc-800 text-slate-100 h-screen w-screen">
-    <Transition name="fade">
-      <RouterView
-        v-slot="{ Component }"
-        class="fixed top-0 left-0 w-full h-[calc(100vh-3.5rem)] overflow-y-scroll overflow-x-hidden px-4 pt-4 custom-scrollbar scrollbar-overlay"
-      >
+    <RouterView
+      v-slot="{ Component }"
+      class="fixed top-0 left-0 w-full h-[calc(100vh-3.5rem)] overflow-y-scroll overflow-x-hidden px-4 pt-4 custom-scrollbar scrollbar-overlay"
+    >
+      <Transition name="fade">
         <Component :is="Component" />
-      </RouterView>
-    </Transition>
+      </Transition>
+    </RouterView>
 
     <AppFooter />
 
