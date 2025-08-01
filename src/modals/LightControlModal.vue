@@ -120,13 +120,7 @@ function onColorInput() {
   if (colorTimeout) clearTimeout(colorTimeout)
   colorTimeout = setTimeout(() => {
     const rgb = hexToRgb(colorHex.value)
-    console.log('Setting color:', rgb)
-    if (isRGBW.value && ledController.setColor) {
-      const rgbw = rgbToRgbwSK6812(rgb)
-      ledController.setColor(rgbw)
-    } else if (ledController.setColor) {
-      ledController.setColor(rgb)
-    }
+    ledController.setColor(rgb)
   }, 100)
 }
 
@@ -155,16 +149,6 @@ function hexToRgb(hex: string) {
   return res
     ? { r: parseInt(res[1], 16), g: parseInt(res[2], 16), b: parseInt(res[3], 16) }
     : { r: 255, g: 255, b: 255 }
-}
-function rgbToRgbwSK6812({ r, g, b }: { r: number; g: number; b: number }) {
-  // SK6812 mapping: white = min(r, g, b), subtract from each channel
-  const w = Math.min(r, g, b)
-  return {
-    r: r - w,
-    g: g - w,
-    b: b - w,
-    w,
-  }
 }
 </script>
 

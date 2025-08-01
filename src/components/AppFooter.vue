@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import {
-  HomeIcon,
-  MusicalNoteIcon,
-  QueueListIcon,
-  AdjustmentsVerticalIcon,
-} from '@heroicons/vue/24/outline'
+import { HomeIcon, MusicalNoteIcon, QueueListIcon } from '@heroicons/vue/24/outline'
 import { RouterLink } from 'vue-router'
 
 const links = [
   { name: 'Home', icon: HomeIcon, to: '/' },
   { name: 'Patterns', icon: MusicalNoteIcon, to: '/patterns' },
   { name: 'Playlists', icon: QueueListIcon, to: '/playlists' },
-  { name: 'Settings', icon: AdjustmentsVerticalIcon, to: '/settings' },
 ]
 </script>
 

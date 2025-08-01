@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline'
-import { defineProps, defineEmits, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   dismissable: { type: Boolean, default: false },

@@ -38,7 +38,7 @@
           "
         >
           <div
-            class="w-[80%] max-w-xl aspect-square relative rounded-full"
+            class="relative rounded-full"
             v-if="token && playingPattern"
             :style="gradientColorStops"
           >

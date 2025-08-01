@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useCloudAPIStore } from '@/stores/cloud-api'
 import { Pattern } from '@/cloud-api-types'
 

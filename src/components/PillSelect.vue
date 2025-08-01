@@ -23,9 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-
-const props = defineProps({
+defineProps({
   options: {
     type: Array as () => Array<{ label: string; value: string | number }>,
     required: true,

@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { localFileManager } from '@/stores/local-manifest'
 import { Pattern, Playlist } from '@/cloud-api-types'
 import PatternImage from '@/components/PatternImage.vue'
