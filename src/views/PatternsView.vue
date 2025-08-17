@@ -25,7 +25,7 @@
     </div>
 
     <div
-      class="grid gap-6"
+      class="grid gap-4"
       :class="
         cols === 5
           ? 'grid-cols-5'

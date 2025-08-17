@@ -6,7 +6,7 @@ import router from '@/router'
 
 import App from './App.vue'
 
-export const tableBaseURL = import.meta.env.PROD ? '/' : 'http://192.168.0.135'
+export const tableBaseURL = import.meta.env.PROD ? '' : 'http://192.168.0.135'
 
 const app = createApp(App)
 app.use(router)

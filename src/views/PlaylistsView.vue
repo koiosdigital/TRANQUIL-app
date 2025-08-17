@@ -25,7 +25,7 @@
     </div>
 
     <div
-      class="grid gap-6"
+      class="grid gap-4"
       :class="
         cols === 5
           ? 'grid-cols-5'
@@ -43,7 +43,8 @@
         :playlist="playlist"
         @click="
           () => {
-            router.push(`/playlists/${playlist.uuid}?source=${playlistsSource}`)
+            selectedPlaylist = playlist
+            playlistModalOpen = true
           }
         "
         class="cursor-pointer"
@@ -52,6 +53,14 @@
         <span class="text-slate-400">Loading...</span>
       </div>
     </div>
+
+    <Modal v-model="playlistModalOpen" :dismissable="true">
+      <LocalPlaylistModal
+        :playlist="selectedPlaylist!"
+        @close="playlistModalOpen = false"
+        v-if="playlistsSource === 'local'"
+      />
+    </Modal>
   </div>
 </template>
 
@@ -63,14 +72,17 @@ import { localFileManager } from '@/stores/local-manifest'
 import HeroiconMagnifyingGlass from '@/components/HeroiconMagnifyingGlass.vue'
 import PlaylistCard from '@/components/PlaylistCard.vue'
 import PillSelect from '@/components/PillSelect.vue'
-import { useRouter } from 'vue-router'
+import LocalPlaylistModal from '@/modals/LocalPlaylistModal.vue'
+import Modal from '@/components/Modal.vue'
+import { Playlist } from '@/cloud-api-types'
 
 const loading = ref(false)
 const scroller = ref<HTMLElement | null>(null)
 const cols = ref(getCols())
 
-const router = useRouter()
 const playlistsSource = ref<'local' | 'cloud'>('local')
+const playlistModalOpen = ref(false)
+const selectedPlaylist = ref<Playlist | null>(null)
 const searchQuery = ref('')
 
 const playlists = computed(() => {

@@ -5,7 +5,7 @@
     v-if="visible"
   >
     <div
-      class="bg-zinc-900 rounded-lg p-8 pt-12 max-w-5xl w-[90vw] min-h-[100px] relative drop-shadow-2xl"
+      class="bg-zinc-900 rounded-lg p-4 pt-12 max-w-5xl w-[90vw] min-h-[100px] relative drop-shadow-2xl"
       @click.stop
     >
       <div class="absolute top-0 left-0 w-full flex items-center justify-between px-8 pt-4 pb-2">
@@ -26,12 +26,13 @@
 <script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { ref, watch } from 'vue'
+interface ModalProps {
+  dismissable?: boolean
+  modelValue?: boolean // for v-model
+  title?: string
+}
 
-const props = defineProps({
-  dismissable: { type: Boolean, default: false },
-  modelValue: { type: Boolean, default: true }, // for v-model
-  title: { type: String, default: '' },
-})
+const props = defineProps<ModalProps>()
 
 const emit = defineEmits(['update:modelValue'])
 const visible = ref(props.modelValue)

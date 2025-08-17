@@ -77,6 +77,23 @@ export const usePlaylistsStore = defineStore('playlists', () => {
     }
   }
 
+  async function deletePlaylist(uuid: string) {
+    loading.value = true;
+    try {
+      const res = await fetch(`${playlistsBaseUrl}/${uuid}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete playlist');
+      // Optionally, you can remove the playlist from the local state
+      playlists.value = playlists.value.filter(p => p.uuid !== uuid);
+      if (current.value?.uuid === uuid) {
+        current.value = null; // Clear current if deleted
+      }
+    } finally {
+      loading.value = false;
+    }
+  }
+
   // Reorder playlist
   async function reorderPlaylist(uuid: string, newOrder: string[]) {
     loading.value = true;
@@ -98,5 +115,6 @@ export const usePlaylistsStore = defineStore('playlists', () => {
     createPlaylist,
     modifyPlaylist,
     reorderPlaylist,
+    deletePlaylist,
   };
 });

@@ -23,16 +23,15 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  options: {
-    type: Array as () => Array<{ label: string; value: string | number }>,
-    required: true,
-  },
-  modelValue: {
-    type: [String, Number],
-    required: true,
-  },
-})
+interface Option {
+  label: string
+  value: string | number
+}
+
+defineProps<{
+  options: Option[]
+  modelValue: string | number
+}>()
 
 defineEmits(['update:modelValue'])
 </script>
